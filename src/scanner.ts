@@ -120,11 +120,17 @@ export const RULES: readonly Rule[] = [
   },
 ];
 
-const CONTROL_CHARS = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g;
+// Controles C0/C1 (inclui ESC, \n, \r, \t), separadores de linha/parágrafo e
+// caracteres que invertem a direção do texto ou são invisíveis.
+const CONTROL_CHARS =
+  /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u2028-\u202e\u2060-\u2069\ufeff]/g;
 
-/** Troca caracteres de controle (inclusive ESC) por "�", para o texto ser seguro de imprimir. */
+/**
+ * Troca caracteres de controle e de direção de texto por "\uFFFD", para o texto ser seguro de
+ * imprimir: sem sequências de escape, sem quebras de linha forjadas e sem texto invertido.
+ */
 export function sanitize(text: string): string {
-  return text.replace(CONTROL_CHARS, "�");
+  return text.replace(CONTROL_CHARS, "\uFFFD");
 }
 
 const IGNORE_MARK = "migra-cnpj-ignore";
@@ -164,7 +170,7 @@ export function scanText(content: string, file: string): Finding[] {
           column: match.index + 1,
           rule: rule.id,
           message: rule.message,
-          snippet: sanitize(line.trim().slice(0, 200)),
+          snippet: sanitize(line.trim().slice(0, 200).replace(/\t/g, " ")),
         });
         break;
       }

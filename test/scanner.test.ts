@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { scanDirectory, scanText } from "../src/scanner";
+import { sanitize, scanDirectory, scanText } from "../src/scanner";
 
 const regras = (codigo: string, arquivo = "exemplo.ts") =>
   scanText(codigo, arquivo).map((achado) => achado.rule);
@@ -99,6 +99,18 @@ describe("scanText", () => {
     const [achado] = scanText("Number(cnpj); \u001b[2J\u001b]0;pwn\u0007 \u009b", "a.ts");
     expect(achado?.snippet).not.toMatch(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/);
     expect(achado?.snippet).toContain("�");
+  });
+
+  it("sanitize troca quebras de linha, direção de texto e invisíveis, e mantém acentos", () => {
+    const sujo = "a\nb\rc\u202ed\u2066e\u2028f\u200bg\ufeffh";
+    const limpo = sanitize(sujo);
+    expect(limpo).toBe("a�b�c�d�e�f�g�h");
+    expect(sanitize("conversão são ç — ok")).toBe("conversão são ç — ok");
+  });
+
+  it("mantém tabulação do trecho como espaço", () => {
+    const [achado] = scanText("\tNumber(cnpj);\t// x", "a.ts");
+    expect(achado?.snippet).toBe("Number(cnpj); // x");
   });
 
   it("respeita o comentário migra-cnpj-ignore", () => {
