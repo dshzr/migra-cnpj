@@ -1,0 +1,94 @@
+{
+  "name": "migra-cnpj",
+  "version": "0.1.0",
+  "description": "CNPJ alfanumérico: validação, formatação, geração e um scanner que aponta o que quebra no seu código com o novo formato",
+  "keywords": [
+    "cnpj",
+    "cnpj-alfanumerico",
+    "validador",
+    "validacao",
+    "brasil",
+    "receita-federal",
+    "zod",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Wellington Santos",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dshzr/migra-cnpj.git"
+  },
+  "homepage": "https://github.com/dshzr/migra-cnpj#readme",
+  "bugs": {
+    "url": "https://github.com/dshzr/migra-cnpj/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "migra-cnpj": "dist/cli.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./zod": {
+      "import": {
+        "types": "./dist/zod.d.ts",
+        "default": "./dist/zod.js"
+      },
+      "require": {
+        "types": "./dist/zod.d.cts",
+        "default": "./dist/zod.cjs"
+      }
+    },
+    "./scanner": {
+      "import": {
+        "types": "./dist/scanner.d.ts",
+        "default": "./dist/scanner.js"
+      },
+      "require": {
+        "types": "./dist/scanner.d.cts",
+        "default": "./dist/scanner.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "zod": "^3.23.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsup": "^9.0.0",
+    "typescript": "5.9",
+    "vitest": "^5.1.0",
+    "zod": "^4.6.7"
+  }
+}
