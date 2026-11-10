@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { parseArgs } from "node:util";
 import { format, generate, isAlphanumeric, isValid } from "./index";
-import { scanDirectory, type Finding } from "./scanner";
+import { sanitize, scanDirectory, type Finding } from "./scanner";
 
 const HELP = `migra-cnpj — ferramentas para o CNPJ alfanumérico
 
@@ -49,7 +49,7 @@ function printFindings(findings: Finding[], filesScanned: number): void {
   }
 
   for (const [file, list] of byFile) {
-    console.log(`\n${bold(file)}`);
+    console.log(`\n${bold(sanitize(file))}`);
     for (const finding of list) {
       console.log(
         `  ${dim(`${finding.line}:${finding.column}`)}  ${yellow(finding.rule)}  ${finding.message}`,

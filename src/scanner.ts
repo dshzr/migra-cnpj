@@ -120,6 +120,13 @@ export const RULES: readonly Rule[] = [
   },
 ];
 
+const CONTROL_CHARS = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g;
+
+/** Troca caracteres de controle (inclusive ESC) por "�", para o texto ser seguro de imprimir. */
+export function sanitize(text: string): string {
+  return text.replace(CONTROL_CHARS, "�");
+}
+
 const IGNORE_MARK = "migra-cnpj-ignore";
 const CNPJ = /cnpj/i;
 const PLACEHOLDER = /placeholder\s*[=:]\s*[{"'`\s]*$/i;
@@ -157,7 +164,7 @@ export function scanText(content: string, file: string): Finding[] {
           column: match.index + 1,
           rule: rule.id,
           message: rule.message,
-          snippet: line.trim().slice(0, 200),
+          snippet: sanitize(line.trim().slice(0, 200)),
         });
         break;
       }

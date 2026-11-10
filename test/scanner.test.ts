@@ -95,6 +95,12 @@ describe("scanText", () => {
     expect(achado?.message).toBeTruthy();
   });
 
+  it("troca caracteres de controle do trecho, para não mexer no terminal", () => {
+    const [achado] = scanText("Number(cnpj); \u001b[2J\u001b]0;pwn\u0007 \u009b", "a.ts");
+    expect(achado?.snippet).not.toMatch(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/);
+    expect(achado?.snippet).toContain("�");
+  });
+
   it("respeita o comentário migra-cnpj-ignore", () => {
     expect(regras("const n = parseInt(cnpj, 10); // migra-cnpj-ignore")).toEqual([]);
     expect(regras("// migra-cnpj-ignore\nconst n = parseInt(cnpj, 10);")).toEqual([]);
